@@ -1,0 +1,59 @@
+package com.rezeptbuch.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
+public class Rezepte {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private String zutaten;
+    private String anleitung;
+
+    public Rezepte() {}
+
+    public Rezepte(String name, String zutaten, String anleitung) {
+        this.name = name;
+        this.zutaten = zutaten;
+        this.anleitung = anleitung;
+    }
+
+    // Getter und Setter
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getZutaten() {
+        return zutaten;
+    }
+
+    public void setZutaten(String zutaten) {
+        this.zutaten = zutaten;
+    }
+
+    public String getAnleitung() {
+        return anleitung;
+    }
+
+    public void setAnleitung(String anleitung) {
+        this.anleitung = anleitung;
+    }
+}

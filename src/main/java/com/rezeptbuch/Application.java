@@ -1,4 +1,4 @@
-package com.prancer.dance;
+package com.rezeptbuch;
 
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.theme.Theme;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import java.time.Clock;
 
 @SpringBootApplication
-@Theme("default")
+@Theme()
 public class Application implements AppShellConfigurator {
 
     @Bean
