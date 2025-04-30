@@ -13,6 +13,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 public class LoginView extends VerticalLayout {
 
     public LoginView() {
+        System.out.println("LoginView wird geöffnet");
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
@@ -39,10 +40,12 @@ public class LoginView extends VerticalLayout {
         loginOverlay.getFooter().add(registerButton);
 
         UI.getCurrent().getPage().fetchCurrentURL(url -> {
-            if (url.getQuery().contains("error")) {
+            String query = url.getQuery();
+            if (query != null && query.contains("error")) {
                 loginOverlay.setError(true);
             }
         });
+
 
         loginOverlay.setOpened(true);
 
