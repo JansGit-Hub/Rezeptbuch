@@ -15,7 +15,7 @@ import jakarta.annotation.security.PermitAll;
 @Route("overview")
 @PermitAll
 public class OverView extends AppLayout {
-
+//Test
     private FlexLayout recipeContainer;
 
     public OverView() {
@@ -34,7 +34,7 @@ public class OverView extends AppLayout {
 
         // Rezept-Kacheln
         recipeContainer = new FlexLayout();
-        recipeContainer.getStyle().set("flex-wrap", "wrap"); // Automatischer Umbruch für Kacheln
+        recipeContainer.getStyle().set("flex-wrap", "wrap");
         recipeContainer.setWidth("100%");
         addExampleRecipes();
 
@@ -46,7 +46,7 @@ public class OverView extends AppLayout {
     }
 
     private void addExampleRecipes() {
-        String exampleImageUrl = "https://www.example.com/sample-recipe-image.jpg"; // Ersetze mit einer echten Bild-URL
+        String exampleImageUrl = "https://www.example.com/sample-recipe-image.jpg";
 
         for (int i = 1; i <= 5; i++) {
             Div card = new Div();
