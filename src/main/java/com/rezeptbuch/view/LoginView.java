@@ -43,15 +43,17 @@ public class LoginView extends VerticalLayout {
             String query = url.getQuery();
             if (query != null && query.contains("error")) {
                 loginOverlay.setError(true);
+                loginOverlay.setOpened(true);
+                System.out.println("Login Fehler ist aufgetreten");
             }
         });
 
 
         loginOverlay.setOpened(true);
-
         loginOverlay.addLoginListener(event -> {
             Notification.show("Anmeldung erfolgreich: " + event.getUsername(), 3000, Notification.Position.TOP_CENTER);
         });
+
     }
 }
 
