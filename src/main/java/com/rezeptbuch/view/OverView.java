@@ -2,51 +2,60 @@ package com.rezeptbuch.view;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import jakarta.annotation.security.PermitAll;
 
-@Route("overview")
+@Route("")
 @PermitAll
 public class OverView extends AppLayout {
-//Test
     private FlexLayout recipeContainer;
 
     public OverView() {
-        // Seiten-Navigation
-        SideNav sideNav = new SideNav();
-        sideNav.addItem(new SideNavItem("Startseite", OverView.class));
-        sideNav.addItem(new SideNavItem("Rezepte", OverView.class));
-        sideNav.addItem(new SideNavItem("Favoriten", OverView.class));
 
-        // Suchfeld
         TextField searchField = new TextField("Suche nach Rezepten");
         Button searchButton = new Button("Suchen");
+        ComboBox<String> filterField = new ComboBox<>("Filter");
+        filterField.setItems("Alle", "Vegetarisch", "Vegan", "Glutenfrei", "Low-Carb");
 
-        Div searchContainer = new Div(searchField, searchButton);
-        searchContainer.setWidth("100%");
+        Div searchContainer = new Div();
+        searchContainer.getStyle().set("display", "flex");
+        searchContainer.getStyle().set("gap", "10px");
+        searchContainer.getStyle().set("align-items", "center");
+        searchContainer.getStyle().set("width", "100%");
+        searchButton.getStyle().set("align-self", "flex-end");
+        searchField.setWidth("250px");
+        filterField.setWidth("150px");
+        searchButton.setHeight("40px");
 
-        // Rezept-Kacheln
+        searchContainer.add(searchField, filterField, searchButton);
+
+
+
         recipeContainer = new FlexLayout();
         recipeContainer.getStyle().set("flex-wrap", "wrap");
         recipeContainer.setWidth("100%");
         addExampleRecipes();
 
-        // Layout zusammenfügen
         VerticalLayout mainContent = new VerticalLayout(searchContainer, recipeContainer);
-        addToDrawer(sideNav);
+        addToDrawer(new NavigationMenu());
         addToNavbar(new DrawerToggle(), new H1("Rezeptbuch Übersicht"));
         setContent(mainContent);
     }
 
     private void addExampleRecipes() {
-        String exampleImageUrl = "https://www.example.com/sample-recipe-image.jpg";
+        String exampleImageUrl = "https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg?auto=compress&cs=tinysrgb&w=1200";
 
         for (int i = 1; i <= 5; i++) {
             Div card = new Div();
