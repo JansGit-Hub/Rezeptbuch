@@ -15,6 +15,9 @@ public class Rezepte {
     private String name;
     private String zutaten;
     private String anleitung;
+    private Integer portionen;
+    private String kategorie;
+    private String bildUrl;
 
     public Rezepte() {}
 
@@ -22,6 +25,9 @@ public class Rezepte {
         this.name = name;
         this.zutaten = zutaten;
         this.anleitung = anleitung;
+        this.portionen = portionen;
+        this.kategorie = kategorie;
+        this.bildUrl = bildUrl;
     }
 
     // Getter und Setter
@@ -56,4 +62,16 @@ public class Rezepte {
     public void setAnleitung(String anleitung) {
         this.anleitung = anleitung;
     }
+    public int getPortionen() { return portionen; }
+
+    public void setPortionen(int portionen) { this.portionen = portionen; }
+
+    public String getKategorie() { return kategorie; }
+
+    public void setKategorie(String kategorie) { this.kategorie = kategorie; }
+
+    public String getBildUrl() { return bildUrl; }
+
+    public void setBildUrl(String bildUrl) { this.bildUrl = bildUrl; }
+
 }
