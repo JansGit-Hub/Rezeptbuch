@@ -2,6 +2,7 @@ package com.rezeptbuch;
 
 import com.rezeptbuch.service.CustomUserDetailsService;
 import com.rezeptbuch.view.LoginView;
+import com.rezeptbuch.view.OverView;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -31,11 +32,15 @@ public class SecurityConfiguration extends VaadinWebSecurity {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
+        http
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                );
+
         setLoginView(http, LoginView.class);
     }
-
-
-
-
 }
 
