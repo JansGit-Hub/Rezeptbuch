@@ -17,7 +17,6 @@ public class RezepteService {
         this.rezepteRepository = rezepteRepository;
     }
 
-    // Rezept speichern
     public Rezepte saveRezept(Rezepte rezept) {
         if (rezept.getName() == null || rezept.getName().isEmpty()) {
             throw new IllegalArgumentException("Der Name des Rezepts darf nicht leer sein.");

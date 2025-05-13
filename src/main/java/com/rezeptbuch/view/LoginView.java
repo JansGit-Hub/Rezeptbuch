@@ -1,9 +1,7 @@
 package com.rezeptbuch.view;
-
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.login.LoginOverlay;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -36,7 +34,6 @@ public class LoginView extends VerticalLayout {
                 .set("width", "100%")
                 .set("border-radius", "5px");
 
-
         loginOverlay.getFooter().add(registerButton);
 
         UI.getCurrent().getPage().fetchCurrentURL(url -> {
@@ -47,13 +44,7 @@ public class LoginView extends VerticalLayout {
                 System.out.println("Login Fehler ist aufgetreten");
             }
         });
-
-
         loginOverlay.setOpened(true);
-        loginOverlay.addLoginListener(event -> {
-            Notification.show("Anmeldung erfolgreich: " + event.getUsername(), 3000, Notification.Position.TOP_CENTER);
-        });
-
     }
 }
 
