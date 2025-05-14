@@ -1,8 +1,10 @@
 package com.rezeptbuch.view;
 
+import com.rezeptbuch.model.Rezepte;
+import com.rezeptbuch.model.RezepteRepository;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.*;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -10,9 +12,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.html.Hr;
 
 
 import java.util.ArrayList;
@@ -21,29 +20,28 @@ import java.util.List;
 @Route("rezept-erstellen")
 @PermitAll
 public class RezeptErstellenView extends VerticalLayout {
+    private final RezepteRepository rezepteRepository;
 
-    private final TextField titelField = new TextField("Titel");
-    private final TextArea beschreibungField = new TextArea("Beschreibung");
-    private final ComboBox<String> kategorieBox = new ComboBox<>("Kategorie");
-
+    private final TextField titelField = new TextField("Titel*");
+    private final TextArea beschreibungField = new TextArea("Beschreibung*");
+    private final ComboBox<String> kategorieBox = new ComboBox<>("Kategorie*");
     private final TextField portionenField = new TextField("Portionen");
     private final Button minusButton = new Button("−");
     private final Button plusButton = new Button("+");
-
     private final Upload bildUpload = new Upload();
     private final Image bildPreview = new Image();
-
     private final Button zutatHinzufuegenButton = new Button("+ Zutat hinzufügen");
     private final TextField tagField = new TextField("+ Tag hinzufügen");
     private final HorizontalLayout tagAnzeige = new HorizontalLayout();
-
     private final Button speichernButton = new Button("Speichern");
     private final Button abbrechenButton = new Button("Abbrechen");
-    private final Button loeschenButton = new Button("Löschen");
 
     private int portionen = 4; // Startwert
+    private final List<String> tags = new ArrayList<>();
 
-    public RezeptErstellenView() {
+    public RezeptErstellenView(RezepteRepository rezepteRepository) {
+        this.rezepteRepository = rezepteRepository;
+
         setSpacing(true);
         setPadding(true);
 
@@ -62,8 +60,10 @@ public class RezeptErstellenView extends VerticalLayout {
         });
 
         plusButton.addClickListener(e -> {
-            portionen++;
-            portionenField.setValue(String.valueOf(portionen));
+            if (portionen < 100) {
+                portionen++;
+                portionenField.setValue(String.valueOf(portionen));
+            }
         });
 
         HorizontalLayout portionenLayout = new HorizontalLayout(minusButton, portionenField, plusButton);
@@ -74,7 +74,6 @@ public class RezeptErstellenView extends VerticalLayout {
         bildPreview.setMaxWidth("200px");
 
         // Tag-Handling
-        List<String> tags = new ArrayList<>();
         tagField.addValueChangeListener(event -> {
             String tag = event.getValue();
             if (!tag.isEmpty() && !tags.contains(tag)) {
@@ -89,35 +88,62 @@ public class RezeptErstellenView extends VerticalLayout {
             }
         });
 
-        // Aktionen
-        speichernButton.addClickListener(e -> Notification.show("Rezept gespeichert (Platzhalter)"));
+        // Speichern
+        speichernButton.addClickListener(e -> {
+            String titel = titelField.getValue();
+            String beschreibung = beschreibungField.getValue();
+            String kategorie = kategorieBox.getValue();
+            String portionenText = portionenField.getValue();
+
+            if (titel.isEmpty() || beschreibung.isEmpty() || kategorie == null) {
+                Notification.show("Bitte alle mit * markierten Felder ausfüllen", 3000, Notification.Position.MIDDLE);
+                return;
+            }
+
+            Rezepte rezept = new Rezepte();
+            rezept.setName(titel);
+            rezept.setAnleitung(beschreibung);
+            rezept.setKategorie(kategorie);
+            rezept.setPortionen(Integer.parseInt(portionenText));
+            rezept.setZutaten("Noch keine Zutaten erfasst"); // TODO: Zutaten dynamisch erfassen
+            rezept.setBildUrl("Noch kein Bild"); // Placeholder
+
+            rezepteRepository.save(rezept);
+
+            Notification.show("Rezept gespeichert!", 3000, Notification.Position.TOP_CENTER);
+
+            // Felder zurücksetzen
+            titelField.clear();
+            beschreibungField.clear();
+            kategorieBox.clear();
+            portionen = 4;
+            portionenField.setValue(String.valueOf(portionen));
+            tagAnzeige.removeAll();
+            tags.clear();
+        });
 
         abbrechenButton.addClickListener(e -> {
-            getUI().ifPresent(ui -> ui.navigate("overview")); // oder Startseite
+            getUI().ifPresent(ui -> ui.navigate("start")); // TODO: Zielroute definieren
         });
-
-        loeschenButton.addClickListener(e -> {
-            Notification.show("Rezept gelöscht (Platzhalter)");
-        });
-        loeschenButton.getStyle().set("color", "red");
 
         // Layout-Zusammenstellung
         HorizontalLayout topRow = new HorizontalLayout(titelField, bildUpload);
-        HorizontalLayout catRow = new HorizontalLayout(kategorieBox, portionenLayout);
-
+        topRow.setAlignItems(Alignment.CENTER);
+        HorizontalLayout midRow = new HorizontalLayout(beschreibungField, portionenLayout);
+        midRow.setAlignItems(Alignment.CENTER);
+        HorizontalLayout bottomRow = new HorizontalLayout(kategorieBox, tagField);
+        bottomRow.setAlignItems(Alignment.CENTER);
         HorizontalLayout actionRow = new HorizontalLayout(abbrechenButton, speichernButton);
         actionRow.setSpacing(true);
 
         add(
                 new H2("Rezept erstellen"),
                 topRow,
-                beschreibungField,
                 zutatHinzufuegenButton,
-                catRow,
-                tagField,
+                midRow,
+                bottomRow,
                 tagAnzeige,
                 new Hr(),
-                loeschenButton,
                 actionRow
         );
     }

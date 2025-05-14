@@ -1,9 +1,6 @@
 package com.rezeptbuch.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Rezepte {
@@ -13,7 +10,9 @@ public class Rezepte {
     private Long id;
 
     private String name;
+    @Lob
     private String zutaten;
+    @Lob
     private String anleitung;
     private Integer portionen;
     private String kategorie;
