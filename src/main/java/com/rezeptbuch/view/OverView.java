@@ -81,9 +81,9 @@ public class OverView extends AppLayout {
             notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             Button logoutButton = new Button("Logout", e -> {
                 UI.getCurrent().navigate("/");
-//                VaadinSession.getCurrent().close();
-//                VaadinSession.getCurrent().getSession().invalidate();
-//                SecurityContextHolder.clearContext();
+                VaadinSession.getCurrent().close();
+                VaadinSession.getCurrent().getSession().invalidate();
+                SecurityContextHolder.clearContext();
 
             });
             logoutButton.getStyle().set("color", "red");

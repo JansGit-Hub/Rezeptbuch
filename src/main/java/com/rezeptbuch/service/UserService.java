@@ -40,12 +40,16 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                user.getAuthorities()
+        );
     }
 
 
     public User registerUser(User user) {
-        // check if user with username or email already exist
         userRepository.findByUsernameOrEmail(user.getUsername(), user.getEmail())
                 .ifPresent(existingUser -> {
                     throw new IllegalStateException("User already exists");
@@ -96,5 +100,10 @@ public class UserService implements UserDetailsService {
         tokenService.save(confirmationToken);
 
         enableUser(confirmationToken.getUser());
+    }
+
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 }

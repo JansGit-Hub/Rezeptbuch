@@ -3,6 +3,9 @@ package com.rezeptbuch.service;
 import com.rezeptbuch.model.Token;
 import com.rezeptbuch.model.User;
 import com.rezeptbuch.model.UserRepository;
+import com.vaadin.flow.component.UI;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,6 +56,16 @@ public class AuthenticationService {
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    }
+
+    public void verifyUserAccess() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Optional<Token> userTokenOpt = findUserToken(username);
+
+        if (userTokenOpt.isEmpty() || !isTokenConfirmed(userTokenOpt.get().getToken())) {
+            UI.getCurrent().navigate("register/confirmToken?token=" + "&error=true");
+        }
     }
 
 }

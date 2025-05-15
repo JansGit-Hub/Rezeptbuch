@@ -4,13 +4,11 @@ import com.rezeptbuch.service.UserService;
 import com.rezeptbuch.view.LoginView;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.config.http.SessionCreationPolicy;
+
 
 @Configuration
 @EnableWebSecurity
@@ -26,6 +24,10 @@ public class SecurityConfig extends VaadinWebSecurity{
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                        .rememberMe(rememberMe -> rememberMe.key("secure-key").tokenValiditySeconds(86400));
+
         setLoginView(http, LoginView.class);
     }
+
 }

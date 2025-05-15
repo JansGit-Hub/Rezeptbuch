@@ -6,7 +6,9 @@ import com.rezeptbuch.model.TokenRepository;
 import com.rezeptbuch.model.User;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TokenService {
@@ -24,8 +26,17 @@ public class TokenService {
         return tokenRepository.findByUser(user);
     }
 
-
     public void save(Token token) {
         tokenRepository.save(token);
     }
+
+    public Token renewExistingToken(Token token) {
+        token.setToken(UUID.randomUUID().toString());
+        token.setCreatedAt(LocalDateTime.now());
+        token.setExpiresAt(LocalDateTime.now().plusMinutes(15));
+        tokenRepository.save(token);
+        return token;
+    }
+
+
 }
