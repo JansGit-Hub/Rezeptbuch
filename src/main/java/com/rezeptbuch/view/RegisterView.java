@@ -1,83 +1,131 @@
 package com.rezeptbuch.view;
 
+import com.rezeptbuch.model.User;
+import com.rezeptbuch.service.UserService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.NavigationEvent;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import com.rezeptbuch.service.CustomUserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Route("register")
+@PageTitle("Please sign up")
 @AnonymousAllowed
 public class RegisterView extends VerticalLayout {
 
-    private final CustomUserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
-    @Autowired
-    public RegisterView(CustomUserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public RegisterView(UserService userService) {
+        this.userService = userService;
+
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
 
-        this.userDetailsService = userDetailsService;
-        this.passwordEncoder = passwordEncoder;
 
-        Div card = new Div();
-        card.getStyle().set("padding", "20px")
-                .set("border-radius", "8px")
-                .set("box-shadow", "0 4px 8px rgba(0,0,0,0.1)")
-                .set("background-color", "white")
-                .set("max-width", "400px");
+        Div container = new Div();
+        container.getStyle()
+                .set("padding", "20px")
+                .set("border-radius", "10px")
+                .set("box-shadow", "0 4px 10px rgba(0, 0, 0, 0.1)")
+                .set("background-color", "#ffffff")
+                .set("max-width", "400px")
+                .set("margin", "auto");
 
-        var usernameField = new TextField("Benutzername");
-        var passwordField = new PasswordField("Passwort");
+        H2 header = new H2("Please sign up");
 
-        var registerButton = new Button("Registrieren", click -> {
-            String username = usernameField.getValue();
-            String password = passwordField.getValue();
+        VerticalLayout formLayout = new VerticalLayout();
+        formLayout.setSpacing(true);
+        formLayout.setAlignItems(Alignment.CENTER);
 
-            if (username.isEmpty() || password.isEmpty()) {
-                showNotification("Bitte füllen Sie alle Felder aus!", NotificationVariant.LUMO_ERROR);
-                return;
-            }
+        TextField firstName = new TextField("First Name");
+        firstName.setRequiredIndicatorVisible(true);
 
-            if (userDetailsService.userExists(username)) {
-                showNotification("Benutzername ist bereits vergeben! Vorschlag: " + username + "123", NotificationVariant.LUMO_ERROR);
-                return;
-            }
+        TextField lastName = new TextField("Last Name");
+        lastName.setRequiredIndicatorVisible(true);
 
-            userDetailsService.createUser(username, passwordEncoder.encode(password), "USER");
-            showNotification("Registrierung erfolgreich!", NotificationVariant.LUMO_SUCCESS);
-            usernameField.clear();
-            passwordField.clear();
+        TextField username = new TextField("Username");
+        username.setRequiredIndicatorVisible(true);
 
-            UI.getCurrent().getPage().executeJs("setTimeout(() => { window.location.href='login'; }, 2000);");
-        });
+        EmailField email = new EmailField("Email");
+        email.setRequiredIndicatorVisible(true);
+        email.setErrorMessage("Please enter a valid email address!");
 
+        PasswordField password = new PasswordField("Password");
+        password.setRequiredIndicatorVisible(true);
+
+        Button registerButton = new Button("Sign up", new Icon(VaadinIcon.CHECK));
         registerButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        registerButton.setWidth("100%");
 
-        VerticalLayout inputLayout = new VerticalLayout(usernameField, passwordField, registerButton);
-        inputLayout.setSpacing(true);
-        inputLayout.setAlignItems(Alignment.CENTER);
+        registerButton.addClickListener(event -> registerUser(firstName, lastName, username, email, password));
 
-        card.add(new H1("Registrieren"), inputLayout);
-        add(card);
+        formLayout.add(firstName, lastName, username, email, password);
+        container.add(header, formLayout, registerButton);
+
+        add(container);
     }
 
-    private void showNotification(String message, NotificationVariant variant) {
-        Notification notification = new Notification(message, 3000);
-        notification.addThemeVariants(variant);
-        notification.setPosition(Notification.Position.BOTTOM_CENTER);
-        notification.open();
+
+    private void registerUser(TextField firstName, TextField lastName, TextField username, EmailField email, PasswordField password) {
+        boolean hasError = false;
+
+        if (firstName.isEmpty()) {
+            firstName.setInvalid(true);
+            firstName.setErrorMessage("First Name is required!");
+            hasError = true;
+        }
+
+        if (lastName.isEmpty()) {
+            lastName.setInvalid(true);
+            lastName.setErrorMessage("Last Name is required!");
+            hasError = true;
+        }
+
+        if (username.isEmpty()) {
+            username.setInvalid(true);
+            username.setErrorMessage("Username is required!");
+            hasError = true;
+        }
+
+        if (email.isEmpty() || email.isInvalid()) {
+            email.setInvalid(true);
+            email.setErrorMessage("Please enter a valid email address!");
+            hasError = true;
+        }
+
+        if (password.isEmpty()) {
+            password.setInvalid(true);
+            password.setErrorMessage("Password is required!");
+            hasError = true;
+        }
+
+        if (hasError) {
+            return;
+        }
+
+        User user = new User();
+        user.setFirstName(firstName.getValue());
+        user.setLastName(lastName.getValue());
+        user.setUsername(username.getValue());
+        user.setEmail(email.getValue());
+        user.setPassword(password.getValue());
+
+        userService.registerUser(user);
+
+        UI.getCurrent().navigate("verify-email");
+
     }
 }

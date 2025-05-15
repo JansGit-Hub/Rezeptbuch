@@ -1,31 +1,26 @@
-package com.rezeptbuch;
+package com.rezeptbuch.config;
 
-import com.rezeptbuch.service.CustomUserDetailsService;
+import com.rezeptbuch.service.UserService;
 import com.rezeptbuch.view.LoginView;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration extends VaadinWebSecurity {
+public class SecurityConfig extends VaadinWebSecurity{
 
-    private final CustomUserDetailsService userDetailsService;
+    private final UserService userService;
 
     @Autowired
-    public SecurityConfiguration(CustomUserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public SecurityConfig(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -33,9 +28,4 @@ public class SecurityConfiguration extends VaadinWebSecurity {
         super.configure(http);
         setLoginView(http, LoginView.class);
     }
-
-
-
-
 }
-
