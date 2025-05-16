@@ -15,7 +15,7 @@ public class Zutat {
 
     @ManyToOne
     @JoinColumn(name = "einheit_id")
-    //private Einheit einheit;
+    private Einheit einheit;
 
     // Getter und Setter
 
@@ -43,12 +43,12 @@ public class Zutat {
         this.kcalPro100g = kcalPro100g;
     }
 
-//    public Einheit getEinheit() {
-//        return einheit;
-//    }
-//
-//    public void setEinheit(Einheit einheit) {
-//        this.einheit = einheit;
-//    }
+    public Einheit getEinheit() {
+        return einheit;
+    }
+
+    public void setEinheit(Einheit einheit) {
+        this.einheit = einheit;
+    }
 }
 
