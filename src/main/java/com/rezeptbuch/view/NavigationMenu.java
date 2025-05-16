@@ -6,7 +6,11 @@ import com.vaadin.flow.component.sidenav.SideNavItem;
 public class NavigationMenu extends SideNav {
     public NavigationMenu() {
         addItem(new SideNavItem("Startseite", OverView.class));
-        addItem(new SideNavItem("Rezept erstellen", OverView.class));
+        addItem(new SideNavItem("Rezept erstellen", RezeptErstellenView.class));
+        
+    }
+}
+
 
     }
 }
