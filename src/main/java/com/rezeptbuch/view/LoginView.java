@@ -47,4 +47,3 @@ public class LoginView extends VerticalLayout {
         loginOverlay.setOpened(true);
     }
 }
-
