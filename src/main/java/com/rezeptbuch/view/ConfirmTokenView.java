@@ -54,7 +54,7 @@ public class ConfirmTokenView extends VerticalLayout implements BeforeEnterObser
                 add(new H1(e.getMessage()));
             }
         } else {
-            add(new H1("Kein Token angegeben!"));
+            add(new H1("Kein Token angegeben, fordere einen neuen an um alle Features zu aktivieren!"));
         }
 
         RouterLink loginLink = new RouterLink("Zum Login", LoginView.class);
