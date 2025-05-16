@@ -7,7 +7,7 @@ public class NavigationMenu extends SideNav {
     public NavigationMenu() {
         addItem(new SideNavItem("Startseite", OverView.class));
         addItem(new SideNavItem("Rezept erstellen", RezeptErstellenView.class));
-        
+        addItem(new SideNavItem("Einkaufsliste", EinkaufslisteView.class));
     }
 }
 
