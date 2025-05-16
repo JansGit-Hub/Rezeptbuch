@@ -4,6 +4,7 @@ import com.rezeptbuch.model.Rezepte;
 import com.rezeptbuch.model.RezepteRepository;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.*;
@@ -12,7 +13,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,16 +39,23 @@ public class RezeptErstellenView extends VerticalLayout {
     private int portionen = 4; // Startwert
     private final List<String> tags = new ArrayList<>();
 
+    // ZUTATEN-DIALOG START
+    private final Dialog zutatDialog = new Dialog();
+    private final TextField zutatNameField = new TextField("Zutat");
+    private final TextField mengeField = new TextField("Menge");
+    private final TextField einheitField = new TextField("Einheit");
+    private final Button zutatSpeichernButton = new Button("Hinzufügen");
+    private final VerticalLayout zutatenListe = new VerticalLayout();
+    // ZUTATEN-DIALOG ENDE
+
     public RezeptErstellenView(RezepteRepository rezepteRepository) {
         this.rezepteRepository = rezepteRepository;
 
         setSpacing(true);
         setPadding(true);
 
-        // Kategorie-Auswahl
         kategorieBox.setItems("Vorspeise", "Hauptspeise", "Nachspeise", "Snack");
 
-        // Portionen-Steuerung
         portionenField.setValue(String.valueOf(portionen));
         portionenField.setReadOnly(true);
 
@@ -69,11 +76,10 @@ public class RezeptErstellenView extends VerticalLayout {
         HorizontalLayout portionenLayout = new HorizontalLayout(minusButton, portionenField, plusButton);
         portionenLayout.setAlignItems(Alignment.BASELINE);
 
-        // Bild Upload
         bildUpload.setAcceptedFileTypes("image/*");
         bildPreview.setMaxWidth("200px");
 
-        // Tag-Handling
+        // Tag-Feld
         tagField.addValueChangeListener(event -> {
             String tag = event.getValue();
             if (!tag.isEmpty() && !tags.contains(tag)) {
@@ -88,7 +94,7 @@ public class RezeptErstellenView extends VerticalLayout {
             }
         });
 
-        // Speichern
+        // SPEICHERN-Logik
         speichernButton.addClickListener(e -> {
             String titel = titelField.getValue();
             String beschreibung = beschreibungField.getValue();
@@ -120,13 +126,40 @@ public class RezeptErstellenView extends VerticalLayout {
             portionenField.setValue(String.valueOf(portionen));
             tagAnzeige.removeAll();
             tags.clear();
+            zutatenListe.removeAll();
         });
 
-        abbrechenButton.addClickListener(e -> {
-            getUI().ifPresent(ui -> ui.navigate("start")); // TODO: Zielroute definieren
+        abbrechenButton.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate("start")));
+
+        // ZUTATEN-DIALOG START
+        zutatDialog.setHeaderTitle("Zutat hinzufügen");
+
+        zutatSpeichernButton.addClickListener(e -> {
+            String name = zutatNameField.getValue();
+            String menge = mengeField.getValue();
+            String einheit = einheitField.getValue();
+
+            if (name.isEmpty() || menge.isEmpty()) {
+                Notification.show("Zutat und Menge müssen ausgefüllt sein", 3000, Notification.Position.MIDDLE);
+                return;
+            }
+
+            String zutatText = menge + " " + einheit + " " + name;
+            zutatenListe.add(new Paragraph(zutatText));
+
+            zutatNameField.clear();
+            mengeField.clear();
+            einheitField.clear();
+            zutatDialog.close();
         });
 
-        // Layout-Zusammenstellung
+        VerticalLayout dialogLayout = new VerticalLayout(zutatNameField, mengeField, einheitField, zutatSpeichernButton);
+        zutatDialog.add(dialogLayout);
+
+        zutatHinzufuegenButton.addClickListener(e -> zutatDialog.open());
+        // ZUTATEN-DIALOG ENDE
+
+        // Layout
         HorizontalLayout topRow = new HorizontalLayout(titelField, bildUpload);
         topRow.setAlignItems(Alignment.CENTER);
         HorizontalLayout midRow = new HorizontalLayout(beschreibungField, portionenLayout);
@@ -140,11 +173,13 @@ public class RezeptErstellenView extends VerticalLayout {
                 new H2("Rezept erstellen"),
                 topRow,
                 zutatHinzufuegenButton,
+                zutatenListe, // ZUTATENLISTE einfügen
                 midRow,
                 bottomRow,
                 tagAnzeige,
                 new Hr(),
-                actionRow
+                actionRow,
+                zutatDialog // ganz am Ende einfügen
         );
     }
 }
