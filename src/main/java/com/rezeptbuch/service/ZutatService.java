@@ -45,8 +45,8 @@ public class ZutatService {
         zutatRepository.deleteById(id);
     }
 
-    // Optional: Nach Name suchen (wenn du das im Repository ergänzen willst)
-    // public List<Zutat> searchZutaten(String name) {
-    //     return zutatRepository.findByNameContainingIgnoreCase(name);
-    // }
+    // Nach Name suchen
+     public List<Zutat> searchZutaten(String name) {
+         return zutatRepository.findByNameContainingIgnoreCase(name);
+     }
 }
