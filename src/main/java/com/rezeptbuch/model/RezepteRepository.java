@@ -7,4 +7,3 @@ import java.util.List;
 public interface RezepteRepository extends JpaRepository<Rezepte, Long> {
     List<Rezepte> findByNameContainingIgnoreCase(String name);
 }
-

@@ -77,6 +77,7 @@ public class OverView extends AppLayout {
 
         if (isAuthenticated) {
             Notification notification = Notification.show("Login erfolgreich! Willkommen " + authentication.getName());
+            System.out.println("ja");
             notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             Button logoutButton = new Button("Logout", e -> {
                 UI.getCurrent().navigate("/");
@@ -88,6 +89,11 @@ public class OverView extends AppLayout {
             logoutButton.getStyle().set("color", "red");
             actions.add(logoutButton);
         } else {
+            System.out.println("nein");
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            System.out.println("Authentifiziert: " + authentication.isAuthenticated());
+            System.out.println("Authorities: " + authentication.getAuthorities());
+            System.out.println("Principal: " + authentication.getPrincipal());
             Button loginButton = new Button("Login", e -> UI.getCurrent().navigate("login"));
             Button registerButton = new Button("Registrieren", e -> UI.getCurrent().navigate("register"));
             actions.add(loginButton, registerButton);
